@@ -1,0 +1,34 @@
+version: "3"
+
+services:
+  # define a service with name app
+  app:
+    container_name: graphqlapp_copy
+    restart: always
+    # build the app image using Dockerfile
+    build: .
+    ports:
+      - "7000:7000"
+    links: 
+      - mongo
+
+  mongo:
+    container_name: graphqlmongo
+    # here we are going to pull the official mongo image from DockerHub Registry 
+    image: mongo
+    # Now, mount the host directory for persistent storage
+    volumes: 
+      - ./data:/data/db
+    ports: 
+      - "27017:27017"
+
+  admin-mongo:
+    image: 0x59/admin-mongo:latest
+    ports: 
+      - "8082:8082"
+    environment: 
+      - PORT=8082
+      - CONN_NAME=mongo
+      - DB_HOST=mongo
+    links: 
+      - mongo
